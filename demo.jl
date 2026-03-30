@@ -29,6 +29,8 @@ This notebook illustrate the use of the _morphism-trick_ introduced in "_Fast an
 
 !!! note
 	This demonstration is limited to the semiring part of our open-source software (via the package `AnonymousSemiringPackage.jl`). It shows how the _morphism trick_ can help the implementation of general vector-Jacobian product to differentiate via "arbitrary" semirings.
+
+The source code of `AnonymousSemiringPackage.jl` and this notebook can be found at: [https://github.com/anonymous-researcher-2/ICML2026_Submission26799.git](https://github.com/anonymous-researcher-2/ICML2026_Submission26799.git).
 """
 
 # ╔═╡ 68ca476e-b29d-49ed-85b2-eb5ebcac5745
@@ -38,7 +40,7 @@ The core idea of the _morphism-trick_ is to enable designing software libraries 
 Our demonstration is structured as follows
 1. Example of a toy library with abstract semiring computation and general vector-jacobian product implementation (with the _morphism-trick_);
 2. Use of our toy library to perform tropical-curve fitting;
-3. Demonstrate how to add a custom semiring that can be differentiated to.
+3. Demonstrate how to add a custom semiring that can be differentiated.
 """
 
 # ╔═╡ e7bc2fd1-52d4-41b6-a39b-1f70f8d38b46
@@ -201,7 +203,8 @@ begin
 	"reverse rule" in ChainRulesCore terminology.
 
 	=> Note that the implementation is defined for an abstract type semiring `S`.
-	=> The implementation relies on overloading `∂sum`, `∂lmul` and ∂rmul`
+	=> The implementation relies on overloading  the functions 
+	   `∂sum`, `∂lmul` and ∂rmul`.
 	=> An example is provided in Section 3 of the notebook.
 	
 	=#
@@ -209,8 +212,10 @@ begin
 								  W::Matrix{S}, 
 								  b::Vector{S},
 								  X::Matrix{S}) where S<:Semiring
+		# Forward pass, simply call our function.
 		H = muladd(W, b, X)
-		
+
+		# Backward pass.
 		function muladd_pullback(ΔH)
 			ΔW = zeros(tangent_type(S), size(W)...)
 			Δb = zeros(tangent_type(S), size(b)...)
@@ -413,7 +418,7 @@ end
 # ╔═╡ Cell order:
 # ╟─f8addabb-735e-4c42-9aab-24ae9bd214a9
 # ╠═ae08ba14-2c1a-11f1-ab5a-a1d86e88e20b
-# ╟─68ca476e-b29d-49ed-85b2-eb5ebcac5745
+# ╠═68ca476e-b29d-49ed-85b2-eb5ebcac5745
 # ╟─e7bc2fd1-52d4-41b6-a39b-1f70f8d38b46
 # ╠═2a30d904-da4b-4f35-9813-52c7b2655275
 # ╟─c0962921-3e3c-49df-b8c0-09ebfc3101ce
